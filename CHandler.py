@@ -14,7 +14,7 @@ class CHandler:
         self.socket.settimeout(3.0)
 
         try:
-            self.socket.sendall(b'MAC\n')
+            self.socket.sendall(b'MAC\n') # request MAC address
             data = b""
             while not data.endswith(b'\n'):
                 chunk = self.socket.recv(1024)

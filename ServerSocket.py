@@ -46,3 +46,13 @@ class ServerSocket:
         sock.sendto("AudioControler discovery", ("255.255.255.255", 7368))
         print("Broadcast sent!")
         sock.close()
+
+if __name__ == "__main__":
+    server = ServerSocket()
+    server.start()
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        server.stop()
+    print(server.clients)
