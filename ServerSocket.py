@@ -50,6 +50,7 @@ class ServerSocket:
 if __name__ == "__main__":
     server = ServerSocket()
     server.start()
+    server.broadcast(b"Hello there!")
     try:
         while True:
             pass
