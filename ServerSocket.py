@@ -10,6 +10,7 @@ class ServerSocket:
         self.start_running = False
         self.start_thread = None
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server_socket.bind((self.host, self.port))
         self.server_socket.listen()
         print(f"Server listening on {self.host}:{self.port}")
@@ -18,7 +19,6 @@ class ServerSocket:
         if not self.start_running:
             self.start_thread = threading.Thread(target=self.run)
             self.start_thread.start()
-            print("Server started")
 
     def run(self): # the start thread
         self.start_running = True
@@ -36,8 +36,13 @@ class ServerSocket:
     
     def stop(self):
         self.start_running = False
+        try:
+            self.server_socket.shutdown(socket.SHUT_RDWR)
+        except Exception:
+            pass
         self.server_socket.close()
-        self.start_thread.join()
+        if self.start_thread is not None:
+            self.start_thread.join()
         print("Server socket closed")
     
     def broadcast(self, message):
