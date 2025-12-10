@@ -1,6 +1,6 @@
 import socket
 import threading
-from CHandler import CHandler as ch
+from .CHandler import CHandler as ch
 
 class ServerSocket:
     def __init__(self, host='0.0.0.0', port=7368):
