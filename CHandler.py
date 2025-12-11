@@ -10,19 +10,10 @@ class CHandler:
         self.thread.start()
 
     def handle(self):
-        # a timeout for receiving the MAC
         self.socket.settimeout(3.0)
-
         try:
-            self.socket.sendall(b'MAC:\n') # request MAC address
-            data = b""
-            while not data.endswith(b'\n'):
-                chunk = self.socket.recv(1024)
-                if not chunk:
-                    raise ConnectionError("Client disconnected")
-                data += chunk
-
-            mac = data.strip().decode('utf-8')
+            self.socket.sendall(b'\x02MAC:\x03\n') #request MAC address
+            mac = self.readLine(self.socket)
 
             client = {
                 'socket': self.socket,
@@ -40,3 +31,19 @@ class CHandler:
         except Exception as e:
             print(f"Error handling client {self.address}: {e}")
             self.socket.close()
+    
+    def readLine(self, sock):
+        sock.settimeout(3.0)
+        data = bytearray()
+        while True:
+            chunk = sock.recv(1024)
+            if not chunk:
+                raise ConnectionError("Client disconnected")
+            for b in chunk:
+                if b == 0x02: #STX
+                    data.clear()
+                    continue
+                if b == 0x03: #ETX
+                    string =bytes(data).strip().decode('utf-8', errors='replace')
+                    return string
+                data.append(b)
